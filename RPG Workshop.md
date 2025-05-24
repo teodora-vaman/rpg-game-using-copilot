@@ -1,9 +1,10 @@
 
-Prereq: Create Copilot account - we must specify this at the beginning of the workshop
+Before starting this workshop: **Create Copilot account** 
 
 Links:
 [Reference](https://p5js.org/reference/)
 [p5.js Web Editor](https://editor.p5js.org/)
+[color picker - Search](https://www.bing.com/search?pglt=2211&q=color+picker&cvid=191ea46face54bf1a8a32518f4cde092&gs_lcrp=EgRlZGdlKgYIABBFGDsyBggAEEUYOzIGCAEQABhAMgYIAhAAGEAyBggDEC4YQDIGCAQQABhAMgYIBRAAGEAyBggGEAAYQDIGCAcQABhAMgYICBBFGDwyCAgJEOkHGPxV0gEIMTUzNWowajGoAgiwAgE&FORM=ANNAB1&PC=U531)
 
 # 1st Part - Fundamentals
 Goal: Understand basic concepts and how the environment work
@@ -155,7 +156,7 @@ class Frog{
 }
 ```
 
-- WIN + . for emoji
+- Press `WIN + .` for emoji
 
 
 
@@ -178,17 +179,31 @@ The Game should be created where?
 - I want to be able to just copy the code and play the game
 - Alternatively we can ask Copilot to tell us what we can use for this
 
+
+## Writing Good Prompts 
+
+1. **Be Clear and Specific**: When crafting prompts, clarity and specificity are crucial. Clearly state what you need Copilot to do, whether it's creating, summarizing, editing, or transforming content 
+2. **Provide Context**: Include relevant context in your prompts to help Copilot understand the task better. For example, if you're asking for a summary, mention the specific document or topic, or provide a a image for context
+
+3. **Iterative Development**: Use an iterative approach to refine your prompts. Start with a broad request and then narrow it down with follow-up questions to get more detailed and accurate responses 
+
+4. **Use Examples and Constraints**: Incorporate specific examples and constraints in your prompts to guide Copilot's responses. This helps in generating more precise and relevant outcomes 
+
+5. **Start Fresh for New Tasks**: When switching tasks, avoid interrupting the current conversation. Instead, type "new topic" to start fresh and provide clear instructions for the new task 
+
+6. **Know Copilot's Limitations**: Understand that Copilot is limited to the current conversation. Providing detailed and specific prompts helps in getting better results 
+
 ## First try with copilot
 
-💡Rembember to use ThinkDeeper !
+💡Remember to use Think Deeper !
 
 Let's try different images
+![[DocImages/PacMan.png]]
+```
+I want to create a game like [Pac-Man] using p5.js. The outcome should look like the following picture. Please generate the control including collision and controls for me to paste into editor and execute it
+```
 
-```
-I want to create a game RPG like using p5.js. The outcome should like the following picture. Please generate the control including collision and controls for me to paste into editor and execute it
-```
-
-```
+```javascript
 let pacman;
 let ghosts = [];
 let walls = [];
@@ -425,6 +440,17 @@ class Wall {
 ```
 
 
+## Now let's try to create the RPG
+
+Starting from this image:
+![[DocImages/RPG_Start.png]]
+Prompt:
+
+```
+I want to create a game RPG like using p5.js. The outcome should look like the following picture. Please generate the control including collision and controls for me to paste into editor and execute it
+```
+
+
 Code generated - 1st Iteration
 ```javascript
 let player;
@@ -540,15 +566,26 @@ class Obstacle {
 
 
 
+## Adding images to the game
+
 ```
 Let's add sprite images for the elements. For now we have the Player. and We will have two other types of obsctacles - Tree and House, each one with a spite mage. Also, background should be an image as well
 ```
 
-
+Prompt:
 💡 This is also good moment to create the sprite images
+
+📌Open a separate chat for creating the images so we don't mix the contexts
 ```
 Generate a image with transparent background of fantasy house in pixel style, for a RPG game
 ```
+
+
+Prompt:
+```
+Create a pixel art charcter for a 2d RPG game. Character is [a girl with brown hair and glasses](insert your own characteristics here). Make the background transparent.
+```
+
 
 ### Variation on the code with image Sprites
 ```javascript
@@ -692,7 +729,7 @@ class House extends Obstacle {
 
 ```
 
-Code with update sizes:
+Code with update sizes - better to use this one
 ```javascript
 let player;
 let obstacles = [];
@@ -841,12 +878,12 @@ Let's add a NPC that can talk:
 
 Prompt:
 ```
-
+Create a pixel art charcter for a 2d RPG game. Character is a knight with green armor. Make the background transparent.
 ```
 
 
 
-```
+```javascript
 // Global variables and settings
 let player;
 let obstacles = [];
@@ -1061,3 +1098,926 @@ function keyPressed() {
 
 
 
+## Adding a Menu with Items and tasks
+
+Prompt:
+```
+Let's add a Menu to the game. Pressing ESC will pause the game and open the Menu. It will be semi-transparent black background. On the menu we can see 3 things: Information about our Player, a button for Items and a button for Tasks. Information about the Player will contain: Name = Cappuccina, HP = 50, Gold = 0. Task will contain a list of tasks, intial task [Talk with the people around you]. Items is a list, initial item [sword]. Pressing ESC again will exit the menu and continuing the game
+```
+
+
+Game now:
+
+```javascript
+
+// Global game variables
+let player;
+let obstacles = [];
+let npc;
+let playerSpeed = 3;
+
+// Menu Variables
+let menuOpen = false;
+let currentTab = "items"; // can be "items" or "tasks"
+let gameItems = ["sword"];
+let gameTasks = ["Talk with the people around you"];
+
+// Sprite images
+let bgImg, playerImg, treeImg, houseImg, npcImg;
+
+// Dialogue variables for the NPC chat
+let npcDialogue = "";
+let dialogueExpiration = 0;
+
+function preload() {
+  // Load images - please ensure these files are in your project directory.
+  bgImg    = loadImage("background.png");
+  playerImg = loadImage("player.png");
+  treeImg   = loadImage("tree.png");
+  houseImg  = loadImage("house.png");
+  npcImg    = loadImage("npc.png");
+}
+
+function setup() {
+  createCanvas(1000, 1000);
+  
+  // Random starting position for the player (ensuring a full 100x100 sprite fits)
+  let startX = random(0, width - 100);
+  let startY = random(0, height - 100);
+  player = new Player(startX, startY, 100, 100);
+  
+  // Add obstacles; these block movement in the game.
+  obstacles.push(new Tree(150, 200));
+  obstacles.push(new House(400, 100));
+  obstacles.push(new Tree(500, 350));
+  
+  // Create an NPC at a random position (its sprite is also 100x100).
+  let npcX = random(0, width - 100);
+  let npcY = random(0, height - 100);
+  npc = new NPC(npcX, npcY, 100, 100, npcImg);
+}
+
+function draw() {
+  // Draw the background image scaled to fill the canvas.
+  image(bgImg, 0, 0, width, height);
+  
+  // Update the player (and hence game objects) only if the menu is not open.
+  if (!menuOpen) {
+    player.update();
+  }
+  
+  // Draw obstacles, NPC, and Player.
+  for (let obs of obstacles) {
+    obs.display();
+  }
+  npc.display();
+  player.display();
+  
+  // If the player is near the NPC (within 150 pixels) display an interaction hint.
+  let d = dist(
+    player.x + player.w / 2,
+    player.y + player.h / 2,
+    npc.x + npc.w / 2,
+    npc.y + npc.h / 2
+  );
+  if (d < 150 && !menuOpen) {
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Press E to talk", npc.x + npc.w / 2, npc.y - 10);
+  }
+  
+  // Show the NPC dialogue (only when the game isn't paused).
+  if (!menuOpen && millis() < dialogueExpiration) {
+    fill(255);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text(npcDialogue, width / 2, 50);
+  }
+  
+  // If the menu is open, draw the menu overlay.
+  if (menuOpen) {
+    drawMenu();
+  }
+}
+
+function keyPressed() {
+  // Toggle the menu when ESC is pressed.
+  if (keyCode === ESCAPE) {
+    menuOpen = !menuOpen;
+    return;
+  }
+  
+  // Only allow NPC interaction when the game is not paused.
+  if (!menuOpen && (key === 'e' || key === 'E')) {
+    // Check if the player is close enough to the NPC.
+    let d = dist(
+      player.x + player.w / 2,
+      player.y + player.h / 2,
+      npc.x + npc.w / 2,
+      npc.y + npc.h / 2
+    );
+    if (d < 150) {
+      npcDialogue = "NPC: Hello, traveler!";
+      dialogueExpiration = millis() + 3000; // Display dialogue for 3 seconds.
+    }
+  }
+}
+
+function mousePressed() {
+  // If the menu is open, check if one of the buttons was clicked.
+  if (menuOpen) {
+    // Button boundaries for Items button.
+    let itemsButtonX = 50;
+    let itemsButtonY = 170;
+    let itemsButtonW = 120;
+    let itemsButtonH = 50;
+    
+    // Button boundaries for Tasks button.
+    let tasksButtonX = 200;
+    let tasksButtonY = 170;
+    let tasksButtonW = 120;
+    let tasksButtonH = 50;
+    
+    // If the mouse is within the Items button, switch to the Items tab.
+    if (
+      mouseX >= itemsButtonX && mouseX <= itemsButtonX + itemsButtonW &&
+      mouseY >= itemsButtonY && mouseY <= itemsButtonY + itemsButtonH
+    ) {
+      currentTab = "items";
+    }
+    
+    // If the mouse is within the Tasks button, switch to the Tasks tab.
+    if (
+      mouseX >= tasksButtonX && mouseX <= tasksButtonX + tasksButtonW &&
+      mouseY >= tasksButtonY && mouseY <= tasksButtonY + tasksButtonH
+    ) {
+      currentTab = "tasks";
+    }
+  }
+}
+
+// Function to draw the menu overlay.
+function drawMenu() {
+  // Semi-transparent black background.
+  noStroke();
+  fill(0, 0, 0, 150);
+  rect(0, 0, width, height);
+  
+  // Draw the Player Information box.
+  fill(255);
+  rect(50, 50, 300, 100, 10);  // Rounded corners for a nicer look.
+  fill(0);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  text("Player Info", 60, 60);
+  text("Name: Cappuccina", 60, 90);
+  text("HP: 50", 60, 120);
+  text("Gold: 0", 60, 150);
+  
+  // Draw buttons for Items and Tasks.
+  // Items button.
+  let itemsButtonX = 50;
+  let itemsButtonY = 170;
+  let itemsButtonW = 120;
+  let itemsButtonH = 50;
+  if (currentTab === "items") {
+    fill(180);
+  } else {
+    fill(100);
+  }
+  rect(itemsButtonX, itemsButtonY, itemsButtonW, itemsButtonH, 10);
+  fill(255);
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  text("Items", itemsButtonX + itemsButtonW / 2, itemsButtonY + itemsButtonH / 2);
+  
+  // Tasks button.
+  let tasksButtonX = 200;
+  let tasksButtonY = 170;
+  let tasksButtonW = 120;
+  let tasksButtonH = 50;
+  if (currentTab === "tasks") {
+    fill(180);
+  } else {
+    fill(100);
+  }
+  rect(tasksButtonX, tasksButtonY, tasksButtonW, tasksButtonH, 10);
+  fill(255);
+  text("Tasks", tasksButtonX + tasksButtonW / 2, tasksButtonY + tasksButtonH / 2);
+  
+  // Draw the content list based on the active tab.
+  textAlign(LEFT, TOP);
+  fill(255);
+  textSize(20);
+  if (currentTab === "items") {
+    text("Items List:", 50, 240);
+    let yPos = 270;
+    for (let item of gameItems) {
+      text("- " + item, 50, yPos);
+      yPos += 30;
+    }
+  } else if (currentTab === "tasks") {
+    text("Task List:", 50, 240);
+    let yPos = 270;
+    for (let task of gameTasks) {
+      text("- " + task, 50, yPos);
+      yPos += 30;
+    }
+  }
+}
+
+// ------------------------
+// Player class with sprite and collision
+// ------------------------
+class Player {
+  constructor(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+  }
+  
+  update() {
+    let moveX = 0;
+    let moveY = 0;
+    
+    // Player movement with arrow keys.
+    if (keyIsDown(LEFT_ARROW)) {
+      moveX = -playerSpeed;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      moveX = playerSpeed;
+    }
+    if (keyIsDown(UP_ARROW)) {
+      moveY = -playerSpeed;
+    }
+    if (keyIsDown(DOWN_ARROW)) {
+      moveY = playerSpeed;
+    }
+    
+    // Check collisions axis-by-axis (allowing sliding along obstacles).
+    if (!this.checkCollision(this.x + moveX, this.y)) {
+      this.x += moveX;
+    }
+    if (!this.checkCollision(this.x, this.y + moveY)) {
+      this.y += moveY;
+    }
+  }
+  
+  // Check for collisions with every obstacle.
+  checkCollision(newX, newY) {
+    for (let obs of obstacles) {
+      if (this.collidesWith(obs, newX, newY)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  // Axis-Aligned Bounding Box (AABB) collision detection.
+  collidesWith(obs, x, y) {
+    return !(
+      x + this.w < obs.x ||
+      x > obs.x + obs.w ||
+      y + this.h < obs.y ||
+      y > obs.y + obs.h
+    );
+  }
+  
+  // Render the player sprite.
+  display() {
+    image(playerImg, this.x, this.y, this.w, this.h);
+  }
+}
+
+// ----------------------------------
+// Base class for obstacles (Tree and House)
+// ----------------------------------
+class Obstacle {
+  constructor(x, y, w, h, img) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.img = img;
+  }
+  
+  display() {
+    image(this.img, this.x, this.y, this.w, this.h);
+  }
+}
+
+// Tree obstacle (150 x 200)
+class Tree extends Obstacle {
+  constructor(x, y) {
+    super(x, y, 150, 200, treeImg);
+  }
+}
+
+// House obstacle (250 x 250)
+class House extends Obstacle {
+  constructor(x, y) {
+    super(x, y, 250, 250, houseImg);
+  }
+}
+
+// ----------------------------------
+// NPC class (interactive, does not block the player)
+// ----------------------------------
+class NPC {
+  constructor(x, y, w, h, img) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.img = img;
+  }
+  
+  display() {
+    image(this.img, this.x, this.y, this.w, this.h);
+  }
+}
+
+```
+
+
+## Adding an Enemy and Battle Scene
+
+💡Remember to upload enemy.png image
+
+Prompts:
+
+```
+Add a new type of object: Enemy. The enemy will move randomly accross the scene. It will have an image as well. Touching the enemy will trigger Battle scene.
+```
+
+Battle scene prompt: - Paste the image as well
+```
+Let's create a battle scene similar to this image, just with two options Fight and Do Nothing. Fight will take 10 hp from the enemy. Pressing it will display a message on the screen "You attack viciously with your sword". After that is the Enemy's turn. It will to random damage between 0 and 10. Player has starting HP of 100, Enemy has HP of 50. If you win the fight the enemy dissapears HP is updated in the Menu and you win 10 Gold.
+```
+
+![[DocImages/battleScene.png]]
+
+
+Code in this point:
+```javascript
+// Global game variables
+let player;
+let obstacles = [];
+let npc;
+let enemy; // The enemy object; may be null after defeat.
+let playerSpeed = 3;
+
+// Menu Variables
+let menuOpen = false;
+let currentTab = "player"; // Options: "player", "items", "tasks"
+let gameItems = ["sword"];
+let gameTasks = ["Talk with the people around you"];
+
+// Game state: whether a battle is ongoing.
+let inBattle = false;
+
+// Battle-related variables
+let battleMessage = "";
+let playerHP = 100;
+let enemyHP = 50;
+let playerGold = 0;
+
+// Sprite images
+let bgImg, playerImg, treeImg, houseImg, npcImg, enemyImg;
+
+// Dialogue variables for NPC interaction
+let npcDialogue = "";
+let dialogueExpiration = 0;
+
+function preload() {
+  // Load images (ensure these filenames match your project files)
+  bgImg    = loadImage("background.png");
+  playerImg = loadImage("player.png");
+  treeImg   = loadImage("tree.png");
+  houseImg  = loadImage("house.png");
+  npcImg    = loadImage("npc.png");
+  enemyImg  = loadImage("enemy.png");
+}
+
+function setup() {
+  createCanvas(1000, 1000);
+  
+  // Random starting position for the player (ensuring a 100x100 sprite fits)
+  let startX = random(0, width - 100);
+  let startY = random(0, height - 100);
+  player = new Player(startX, startY, 100, 100);
+  
+  // Add obstacles (which block movement)
+  obstacles.push(new Tree(150, 200));
+  obstacles.push(new House(400, 100));
+  obstacles.push(new Tree(500, 350));
+  
+  // Create an NPC at a random position (sprite sized 100x100)
+  let npcX = random(0, width - 100);
+  let npcY = random(0, height - 100);
+  npc = new NPC(npcX, npcY, 100, 100, npcImg);
+  
+  // Create an Enemy that roams the scene randomly, also 100x100.
+  // The enemy will have starting HP of 50.
+  let enemyX = random(0, width - 100);
+  let enemyY = random(0, height - 100);
+  enemy = new Enemy(enemyX, enemyY, 100, 100, enemyImg);
+}
+
+function draw() {
+  if (inBattle) {
+    // When in battle, let the battle scene manage drawing.
+    drawBattleScene();
+    return;
+  }
+  
+  // Exploration mode
+  image(bgImg, 0, 0, width, height);
+  
+  // Update game objects only if the menu is closed.
+  if (!menuOpen) {
+    player.update();
+    if (enemy) {
+      enemy.update();
+    }
+  }
+  
+  // Draw obstacles.
+  for (let obs of obstacles) {
+    obs.display();
+  }
+  
+  // Display NPC and enemy (enemy might be null after defeat).
+  npc.display();
+  if (enemy) {
+    enemy.display();
+  }
+  
+  // Display the player on top.
+  player.display();
+  
+  // Check for NPC interaction hint (only if not paused).
+  let dNPC = dist(
+    player.x + player.w / 2,
+    player.y + player.h / 2,
+    npc.x + npc.w / 2,
+    npc.y + npc.h / 2
+  );
+  if (dNPC < 150 && !menuOpen) {
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Press E to talk", npc.x + npc.w / 2, npc.y - 10);
+  }
+  
+  // Show NPC dialogue if active.
+  if (!menuOpen && millis() < dialogueExpiration) {
+    fill(255);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text(npcDialogue, width / 2, 50);
+  }
+  
+  // Check for enemy collision – touching the enemy triggers battle.
+  if (!menuOpen && enemy && collisionRect(player, enemy)) {
+    inBattle = true;
+    // Reset battle variables.
+    enemyHP = 50;
+    battleMessage = "";
+  }
+  
+  // Draw the menu overlay if the menu is open.
+  if (menuOpen) {
+    drawMenu();
+  }
+}
+
+function keyPressed() {
+  // In battle mode, we now use the two on-screen buttons.
+  if (inBattle) {
+    return; // Ignore key presses during battle.
+  }
+  
+  // Toggle the pause menu when ESC is pressed.
+  if (keyCode === ESCAPE) {
+    menuOpen = !menuOpen;
+    return;
+  }
+  
+  // Allow NPC interaction in exploration mode.
+  if (!menuOpen && (key === 'e' || key === 'E')) {
+    let d = dist(
+      player.x + player.w / 2,
+      player.y + player.h / 2,
+      npc.x + npc.w / 2,
+      npc.y + npc.h / 2
+    );
+    if (d < 150) {
+      npcDialogue = "NPC: Hello, traveler!";
+      dialogueExpiration = millis() + 3000; // Dialogue lasts 3 seconds.
+    }
+  }
+}
+
+function mousePressed() {
+  if (inBattle) {
+    // Handle battle option clicks.
+    let buttonW = 150;
+    let buttonH = 50;
+    let spacing = 50;
+    let totalWidth = buttonW * 2 + spacing;
+    let startX = (width - totalWidth) / 2;
+    // Position the battle buttons near the bottom.
+    let buttonY = height - 150;
+    
+    // "Fight" button.
+    if (
+      mouseX >= startX && mouseX <= startX + buttonW &&
+      mouseY >= buttonY && mouseY <= buttonY + buttonH
+    ) {
+      processBattle('fight');
+      return;
+    }
+    // "Do Nothing" button.
+    if (
+      mouseX >= startX + buttonW + spacing && mouseX <= startX + buttonW + spacing + buttonW &&
+      mouseY >= buttonY && mouseY <= buttonY + buttonH
+    ) {
+      processBattle('nothing');
+      return;
+    }
+  }
+  
+  // Handle menu button clicks if the menu is open.
+  if (menuOpen) {
+    let buttonW = 150;
+    let buttonH = 50;
+    let spacing = 20;
+    let totalWidth = 3 * buttonW + 2 * spacing;
+    let startX = (width - totalWidth) / 2;
+    let centerY = (height - buttonH) / 2;
+    
+    // Player Info button.
+    if (
+      mouseX >= startX && mouseX <= startX + buttonW &&
+      mouseY >= centerY && mouseY <= centerY + buttonH
+    ) {
+      currentTab = "player";
+    }
+    // Items button.
+    else if (
+      mouseX >= startX + buttonW + spacing &&
+      mouseX <= startX + buttonW + spacing + buttonW &&
+      mouseY >= centerY && mouseY <= centerY + buttonH
+    ) {
+      currentTab = "items";
+    }
+    // Tasks button.
+    else if (
+      mouseX >= startX + 2 * (buttonW + spacing) &&
+      mouseX <= startX + 2 * (buttonW + spacing) + buttonW &&
+      mouseY >= centerY && mouseY <= centerY + buttonH
+    ) {
+      currentTab = "tasks";
+    }
+  }
+}
+
+// AABB collision detection between two rectangular objects.
+function collisionRect(a, b) {
+  return !(
+    a.x + a.w < b.x ||
+    a.x > b.x + b.w ||
+    a.y + a.h < b.y ||
+    a.y > b.y + b.h
+  );
+}
+
+//────────────────────────────────────────────
+// Battle Scene Functions
+//────────────────────────────────────────────
+
+function drawBattleScene() {
+  // Draw a dark battle background.
+  background(80, 0, 0);
+  
+  // Battle title.
+  fill(255);
+  textSize(48);
+  textAlign(CENTER, TOP);
+  text("Battle!", width / 2, 20);
+  
+  // Draw player's sprite on the left.
+  image(playerImg, 100, height / 2 - 100, 150, 150);
+  textSize(24);
+  textAlign(LEFT, TOP);
+  text("Player HP: " + playerHP, 100, height / 2 + 60);
+  
+  // Draw enemy's sprite on the right if it exists.
+  if (enemy) {
+    image(enemyImg, width - 250, height / 2 - 100, 150, 150);
+    textAlign(RIGHT, TOP);
+    text("Enemy HP: " + enemyHP, width - 250, height / 2 + 60);
+  }
+  
+  // Display the battle message.
+  textSize(28);
+  textAlign(CENTER, CENTER);
+  text(battleMessage, width / 2, height / 2 - 200);
+  
+  // If enemy is still active, show the two battle option buttons.
+  if (enemy) {
+    let buttonW = 150;
+    let buttonH = 50;
+    let spacing = 50;
+    let totalWidth = buttonW * 2 + spacing;
+    let startX = (width - totalWidth) / 2;
+    let buttonY = height - 150;
+    
+    // Fight button.
+    fill(100);
+    rect(startX, buttonY, buttonW, buttonH, 10);
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Fight", startX + buttonW / 2, buttonY + buttonH / 2);
+    
+    // Do Nothing button.
+    fill(100);
+    rect(startX + buttonW + spacing, buttonY, buttonW, buttonH, 10);
+    fill(255);
+    text("Do Nothing", startX + buttonW + spacing + buttonW / 2, buttonY + buttonH / 2);
+  }
+}
+
+function processBattle(choice) {
+  // Ensure enemy exists.
+  if (!enemy) return;
+  
+  if (choice === 'fight') {
+    battleMessage = "You attack viciously with your sword.";
+    enemyHP -= 10;
+    
+    // Check for enemy defeat.
+    if (enemyHP <= 0) {
+      battleMessage += "\nYou defeated the enemy! You win 10 Gold.";
+      playerGold += 10;
+      enemy = null;  // Remove the enemy.
+      // Exit battle scene after a short delay.
+      setTimeout(() => {
+        inBattle = false;
+        battleMessage = "";
+      }, 2000);
+      return;
+    }
+  } else if (choice === 'nothing') {
+    battleMessage = "You do nothing.";
+  }
+  
+  // Enemy's turn: deal random damage between 0 and 10.
+  let damage = Math.floor(random(0, 11));
+  playerHP -= damage;
+  battleMessage += "\nEnemy attacks and deals " + damage + " damage.";
+  
+  // Check if the player has been defeated.
+  if (playerHP <= 0) {
+    battleMessage += "\nYou have been defeated!";
+    // For this demo, exit battle scene after a brief delay.
+    setTimeout(() => {
+      inBattle = false;
+      battleMessage = "";
+    }, 2000);
+  }
+}
+
+//────────────────────────────────────────────
+// Menu Drawing
+//────────────────────────────────────────────
+
+function drawMenu() {
+  // Semi-transparent black overlay.
+  noStroke();
+  fill(0, 0, 0, 150);
+  rect(0, 0, width, height);
+  
+  // Draw a Player Info box.
+  fill(255);
+  rect(50, 50, 300, 100, 10);
+  fill(0);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  // Display updated HP and Gold.
+  text("Player Info", 60, 60);
+  text("Name: Cappuccina", 60, 90);
+  text("HP: " + playerHP, 60, 120);
+  text("Gold: " + playerGold, 60, 150);
+  
+  // Draw three centered menu buttons: Player Info, Items, Tasks.
+  let buttonW = 150;
+  let buttonH = 50;
+  let spacing = 20;
+  let totalWidth = 3 * buttonW + 2 * spacing;
+  let startX = (width - totalWidth) / 2;
+  let centerY = (height - buttonH) / 2;
+  
+  // Player Info button.
+  fill(currentTab === "player" ? 180 : 100);
+  rect(startX, centerY, buttonW, buttonH, 10);
+  fill(255);
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  text("Player Info", startX + buttonW / 2, centerY + buttonH / 2);
+  
+  // Items button.
+  let itemsButtonX = startX + buttonW + spacing;
+  fill(currentTab === "items" ? 180 : 100);
+  rect(itemsButtonX, centerY, buttonW, buttonH, 10);
+  fill(255);
+  text("Items", itemsButtonX + buttonW / 2, centerY + buttonH / 2);
+  
+  // Tasks button.
+  let tasksButtonX = startX + 2 * (buttonW + spacing);
+  fill(currentTab === "tasks" ? 180 : 100);
+  rect(tasksButtonX, centerY, buttonW, buttonH, 10);
+  fill(255);
+  text("Tasks", tasksButtonX + buttonW / 2, centerY + buttonH / 2);
+  
+  // Display content below the buttons based on the active tab.
+  fill(255);
+  textSize(20);
+  textAlign(CENTER, TOP);
+  let contentY = centerY + buttonH + 30;
+  if (currentTab === "player") {
+    text("Name: Cappuccina\nHP: " + playerHP + "\nGold: " + playerGold, width / 2, contentY);
+  } else if (currentTab === "items") {
+    let itemsText = "Items List:\n";
+    for (let item of gameItems) {
+      itemsText += "- " + item + "\n";
+    }
+    text(itemsText, width / 2, contentY);
+  } else if (currentTab === "tasks") {
+    let tasksText = "Tasks List:\n";
+    for (let task of gameTasks) {
+      tasksText += "- " + task + "\n";
+    }
+    text(tasksText, width / 2, contentY);
+  }
+}
+
+//────────────────────────────────────────────
+// Game Object Classes
+//────────────────────────────────────────────
+
+// Player class manages movement, collision, and sprite display.
+class Player {
+  constructor(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+  }
+  
+  update() {
+    let moveX = 0;
+    let moveY = 0;
+    
+    if (keyIsDown(LEFT_ARROW)) {
+      moveX = -playerSpeed;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      moveX = playerSpeed;
+    }
+    if (keyIsDown(UP_ARROW)) {
+      moveY = -playerSpeed;
+    }
+    if (keyIsDown(DOWN_ARROW)) {
+      moveY = playerSpeed;
+    }
+    
+    // Axis-by-axis collision checking (allows sliding along obstacles).
+    if (!this.checkCollision(this.x + moveX, this.y)) {
+      this.x += moveX;
+    }
+    if (!this.checkCollision(this.x, this.y + moveY)) {
+      this.y += moveY;
+    }
+  }
+  
+  checkCollision(newX, newY) {
+    for (let obs of obstacles) {
+      if (this.collidesWith(obs, newX, newY)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  collidesWith(obs, x, y) {
+    return !(
+      x + this.w < obs.x ||
+      x > obs.x + obs.w ||
+      y + this.h < obs.y ||
+      y > obs.y + obs.h
+    );
+  }
+  
+  display() {
+    image(playerImg, this.x, this.y, this.w, this.h);
+  }
+}
+
+// Base class for obstacles (Tree and House)
+class Obstacle {
+  constructor(x, y, w, h, img) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.img = img;
+  }
+  
+  display() {
+    image(this.img, this.x, this.y, this.w, this.h);
+  }
+}
+
+// Tree obstacle (150 x 200)
+class Tree extends Obstacle {
+  constructor(x, y) {
+    super(x, y, 150, 200, treeImg);
+  }
+}
+
+// House obstacle (250 x 250)
+class House extends Obstacle {
+  constructor(x, y) {
+    super(x, y, 250, 250, houseImg);
+  }
+}
+
+// NPC class (interactive, does not block the player)
+class NPC {
+  constructor(x, y, w, h, img) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.img = img;
+  }
+  
+  display() {
+    image(this.img, this.x, this.y, this.w, this.h);
+  }
+}
+
+// Enemy class: moves randomly; colliding triggers a battle.
+class Enemy {
+  constructor(x, y, w, h, img) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.img = img;
+    this.vx = random(-2, 2);
+    this.vy = random(-2, 2);
+    this.changeTimer = int(random(30, 100)); // Frames until direction change.
+  }
+  
+  update() {
+    this.changeTimer--;
+    if (this.changeTimer <= 0) {
+      this.vx = random(-2, 2);
+      this.vy = random(-2, 2);
+      this.changeTimer = int(random(30, 100));
+    }
+    
+    this.x += this.vx;
+    this.y += this.vy;
+    
+    // Bounce off the edges.
+    if (this.x < 0) {
+      this.x = 0;
+      this.vx *= -1;
+    }
+    if (this.x > width - this.w) {
+      this.x = width - this.w;
+      this.vx *= -1;
+    }
+    if (this.y < 0) {
+      this.y = 0;
+      this.vy *= -1;
+    }
+    if (this.y > height - this.h) {
+      this.y = height - this.h;
+      this.vy *= -1;
+    }
+  }
+  
+  display() {
+    image(this.img, this.x, this.y, this.w, this.h);
+  }
+}
+
+```
