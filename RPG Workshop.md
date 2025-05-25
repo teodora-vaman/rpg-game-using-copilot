@@ -886,6 +886,8 @@ Prompt:
 Create a pixel art charcter for a 2d RPG game. Character is a knight with green armor. Make the background transparent.
 ```
 
+![image](https://github.com/user-attachments/assets/5e9367a8-76aa-43f5-aeec-72c7c61f46b0)
+
 
 
 ```javascript
