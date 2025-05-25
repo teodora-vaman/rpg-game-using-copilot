@@ -198,7 +198,10 @@ The Game should be created where?
 💡Remember to use Think Deeper !
 
 Let's try different images
-![[DocImages/PacMan.png]]
+
+./DocImages/PacMan.png
+
+
 ```
 I want to create a game like [Pac-Man] using p5.js. The outcome should look like the following picture. Please generate the control including collision and controls for me to paste into editor and execute it
 ```
@@ -443,7 +446,9 @@ class Wall {
 ## Now let's try to create the RPG
 
 Starting from this image:
-![[DocImages/RPG_Start.png]]
+
+./DocImages/RPG_Start.png
+
 Prompt:
 
 ```
@@ -1457,7 +1462,8 @@ Battle scene prompt: - Paste the image as well
 Let's create a battle scene similar to this image, just with two options Fight and Do Nothing. Fight will take 10 hp from the enemy. Pressing it will display a message on the screen "You attack viciously with your sword". After that is the Enemy's turn. It will to random damage between 0 and 10. Player has starting HP of 100, Enemy has HP of 50. If you win the fight the enemy dissapears HP is updated in the Menu and you win 10 Gold.
 ```
 
-![[DocImages/battleScene.png]]
+
+./DocImages/battleScene.png
 
 
 Code in this point:
