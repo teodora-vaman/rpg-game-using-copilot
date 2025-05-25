@@ -199,8 +199,7 @@ The Game should be created where?
 
 Let's try different images
 
-./DocImages/PacMan.png
-
+![PacMan](https://github.com/user-attachments/assets/20175e7c-b213-4f69-937c-c8ce7142e33e)
 
 ```
 I want to create a game like [Pac-Man] using p5.js. The outcome should look like the following picture. Please generate the control including collision and controls for me to paste into editor and execute it
@@ -447,7 +446,8 @@ class Wall {
 
 Starting from this image:
 
-./DocImages/RPG_Start.png
+![RPG_Start](https://github.com/user-attachments/assets/6ec6c35e-e417-454e-a4f3-82c0dd911e22)
+
 
 Prompt:
 
@@ -1463,7 +1463,7 @@ Let's create a battle scene similar to this image, just with two options Fight a
 ```
 
 
-./DocImages/battleScene.png
+![battleScene](https://github.com/user-attachments/assets/e124ea8a-38cf-4f0f-aaac-b7ae6a371530)
 
 
 Code in this point:
