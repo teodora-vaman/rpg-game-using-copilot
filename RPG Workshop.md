@@ -1125,19 +1125,19 @@ let playerSpeed = 3;
 
 // Menu Variables
 let menuOpen = false;
-let currentTab = "items"; // can be "items" or "tasks"
+let currentTab = "player"; // Options: "player", "items", "tasks"
 let gameItems = ["sword"];
 let gameTasks = ["Talk with the people around you"];
 
 // Sprite images
 let bgImg, playerImg, treeImg, houseImg, npcImg;
 
-// Dialogue variables for the NPC chat
+// Dialogue variables for NPC interaction
 let npcDialogue = "";
 let dialogueExpiration = 0;
 
 function preload() {
-  // Load images - please ensure these files are in your project directory.
+  // Load images (ensure these filenames match your project files)
   bgImg    = loadImage("background.png");
   playerImg = loadImage("player.png");
   treeImg   = loadImage("tree.png");
@@ -1148,17 +1148,17 @@ function preload() {
 function setup() {
   createCanvas(1000, 1000);
   
-  // Random starting position for the player (ensuring a full 100x100 sprite fits)
+  // Random starting position for the player (ensuring the 100x100 sprite fits)
   let startX = random(0, width - 100);
   let startY = random(0, height - 100);
   player = new Player(startX, startY, 100, 100);
   
-  // Add obstacles; these block movement in the game.
+  // Add obstacles (which block movement)
   obstacles.push(new Tree(150, 200));
   obstacles.push(new House(400, 100));
   obstacles.push(new Tree(500, 350));
   
-  // Create an NPC at a random position (its sprite is also 100x100).
+  // Create an NPC at a random position (sprite sized 100x100)
   let npcX = random(0, width - 100);
   let npcY = random(0, height - 100);
   npc = new NPC(npcX, npcY, 100, 100, npcImg);
@@ -1168,19 +1168,19 @@ function draw() {
   // Draw the background image scaled to fill the canvas.
   image(bgImg, 0, 0, width, height);
   
-  // Update the player (and hence game objects) only if the menu is not open.
+  // Update the player only when the menu is not open.
   if (!menuOpen) {
     player.update();
   }
   
-  // Draw obstacles, NPC, and Player.
+  // Display game objects: obstacles, NPC, and the player.
   for (let obs of obstacles) {
     obs.display();
   }
   npc.display();
   player.display();
   
-  // If the player is near the NPC (within 150 pixels) display an interaction hint.
+  // When not paused, allow NPC interaction if close.
   let d = dist(
     player.x + player.w / 2,
     player.y + player.h / 2,
@@ -1194,7 +1194,7 @@ function draw() {
     text("Press E to talk", npc.x + npc.w / 2, npc.y - 10);
   }
   
-  // Show the NPC dialogue (only when the game isn't paused).
+  // Show NPC dialogue (if active and game is not paused).
   if (!menuOpen && millis() < dialogueExpiration) {
     fill(255);
     textSize(32);
@@ -1209,15 +1209,14 @@ function draw() {
 }
 
 function keyPressed() {
-  // Toggle the menu when ESC is pressed.
+  // Toggle the pause menu when ESC is pressed.
   if (keyCode === ESCAPE) {
     menuOpen = !menuOpen;
     return;
   }
   
-  // Only allow NPC interaction when the game is not paused.
+  // Allow NPC interaction only when game is not paused.
   if (!menuOpen && (key === 'e' || key === 'E')) {
-    // Check if the player is close enough to the NPC.
     let d = dist(
       player.x + player.w / 2,
       player.y + player.h / 2,
@@ -1226,116 +1225,120 @@ function keyPressed() {
     );
     if (d < 150) {
       npcDialogue = "NPC: Hello, traveler!";
-      dialogueExpiration = millis() + 3000; // Display dialogue for 3 seconds.
+      dialogueExpiration = millis() + 3000; // Dialogue lasts 3 seconds.
     }
   }
 }
 
 function mousePressed() {
-  // If the menu is open, check if one of the buttons was clicked.
+  // When in the menu, check if one of the three buttons was clicked.
   if (menuOpen) {
-    // Button boundaries for Items button.
-    let itemsButtonX = 50;
-    let itemsButtonY = 170;
-    let itemsButtonW = 120;
-    let itemsButtonH = 50;
+    let buttonW = 150;
+    let buttonH = 50;
+    let spacing = 20;
+    let totalWidth = 3 * buttonW + 2 * spacing;
+    let startX = (width - totalWidth) / 2;
+    let centerY = (height - buttonH) / 2;
     
-    // Button boundaries for Tasks button.
-    let tasksButtonX = 200;
-    let tasksButtonY = 170;
-    let tasksButtonW = 120;
-    let tasksButtonH = 50;
-    
-    // If the mouse is within the Items button, switch to the Items tab.
+    // Boundaries for the Player Info button.
     if (
-      mouseX >= itemsButtonX && mouseX <= itemsButtonX + itemsButtonW &&
-      mouseY >= itemsButtonY && mouseY <= itemsButtonY + itemsButtonH
+      mouseX >= startX && mouseX <= startX + buttonW &&
+      mouseY >= centerY && mouseY <= centerY + buttonH
+    ) {
+      currentTab = "player";
+    }
+    // Boundaries for the Items button.
+    else if (
+      mouseX >= startX + buttonW + spacing &&
+      mouseX <= startX + buttonW + spacing + buttonW &&
+      mouseY >= centerY && mouseY <= centerY + buttonH
     ) {
       currentTab = "items";
     }
-    
-    // If the mouse is within the Tasks button, switch to the Tasks tab.
-    if (
-      mouseX >= tasksButtonX && mouseX <= tasksButtonX + tasksButtonW &&
-      mouseY >= tasksButtonY && mouseY <= tasksButtonY + tasksButtonH
+    // Boundaries for the Tasks button.
+    else if (
+      mouseX >= startX + 2 * (buttonW + spacing) &&
+      mouseX <= startX + 2 * (buttonW + spacing) + buttonW &&
+      mouseY >= centerY && mouseY <= centerY + buttonH
     ) {
       currentTab = "tasks";
     }
   }
 }
 
-// Function to draw the menu overlay.
+// Draw the pause menu overlay.
 function drawMenu() {
-  // Semi-transparent black background.
+  // Draw a semi-transparent black overlay.
   noStroke();
   fill(0, 0, 0, 150);
   rect(0, 0, width, height);
   
-  // Draw the Player Information box.
-  fill(255);
-  rect(50, 50, 300, 100, 10);  // Rounded corners for a nicer look.
-  fill(0);
-  textSize(20);
-  textAlign(LEFT, TOP);
-  text("Player Info", 60, 60);
-  text("Name: Cappuccina", 60, 90);
-  text("HP: 50", 60, 120);
-  text("Gold: 0", 60, 150);
+  // Calculate positions for 3 centered buttons.
+  let buttonW = 150;
+  let buttonH = 50;
+  let spacing = 20;
+  let totalWidth = 3 * buttonW + 2 * spacing;
+  let startX = (width - totalWidth) / 2;
+  let centerY = (height - buttonH) / 2;
   
-  // Draw buttons for Items and Tasks.
-  // Items button.
-  let itemsButtonX = 50;
-  let itemsButtonY = 170;
-  let itemsButtonW = 120;
-  let itemsButtonH = 50;
+  // Draw the "Player Info" button.
+  if (currentTab === "player") {
+    fill(180);
+  } else {
+    fill(100);
+  }
+  rect(startX, centerY, buttonW, buttonH, 10);
+  fill(255);
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  text("Player Info", startX + buttonW / 2, centerY + buttonH / 2);
+  
+  // Draw the "Items" button.
+  let itemsButtonX = startX + buttonW + spacing;
   if (currentTab === "items") {
     fill(180);
   } else {
     fill(100);
   }
-  rect(itemsButtonX, itemsButtonY, itemsButtonW, itemsButtonH, 10);
+  rect(itemsButtonX, centerY, buttonW, buttonH, 10);
   fill(255);
-  textSize(20);
-  textAlign(CENTER, CENTER);
-  text("Items", itemsButtonX + itemsButtonW / 2, itemsButtonY + itemsButtonH / 2);
+  text("Items", itemsButtonX + buttonW / 2, centerY + buttonH / 2);
   
-  // Tasks button.
-  let tasksButtonX = 200;
-  let tasksButtonY = 170;
-  let tasksButtonW = 120;
-  let tasksButtonH = 50;
+  // Draw the "Tasks" button.
+  let tasksButtonX = startX + 2 * (buttonW + spacing);
   if (currentTab === "tasks") {
     fill(180);
   } else {
     fill(100);
   }
-  rect(tasksButtonX, tasksButtonY, tasksButtonW, tasksButtonH, 10);
+  rect(tasksButtonX, centerY, buttonW, buttonH, 10);
   fill(255);
-  text("Tasks", tasksButtonX + tasksButtonW / 2, tasksButtonY + tasksButtonH / 2);
+  text("Tasks", tasksButtonX + buttonW / 2, centerY + buttonH / 2);
   
-  // Draw the content list based on the active tab.
-  textAlign(LEFT, TOP);
+  // Display content below the buttons based on the active tab.
   fill(255);
   textSize(20);
-  if (currentTab === "items") {
-    text("Items List:", 50, 240);
-    let yPos = 270;
+  textAlign(CENTER, TOP);
+  let contentY = centerY + buttonH + 30;
+  if (currentTab === "player") {
+    text("Name: Cappuccina\nHP: 50\nGold: 0", width / 2, contentY);
+  } else if (currentTab === "items") {
+    let itemsText = "Items List:\n";
     for (let item of gameItems) {
-      text("- " + item, 50, yPos);
-      yPos += 30;
+      itemsText += "- " + item + "\n";
     }
+    text(itemsText, width / 2, contentY);
   } else if (currentTab === "tasks") {
-    text("Task List:", 50, 240);
-    let yPos = 270;
+    let tasksText = "Tasks List:\n";
     for (let task of gameTasks) {
-      text("- " + task, 50, yPos);
-      yPos += 30;
+      tasksText += "- " + task + "\n";
     }
+    text(tasksText, width / 2, contentY);
   }
 }
 
 // ------------------------
-// Player class with sprite and collision
+// Player class (handles movement, collision, and sprite display)
 // ------------------------
 class Player {
   constructor(x, y, w, h) {
@@ -1349,7 +1352,6 @@ class Player {
     let moveX = 0;
     let moveY = 0;
     
-    // Player movement with arrow keys.
     if (keyIsDown(LEFT_ARROW)) {
       moveX = -playerSpeed;
     }
@@ -1363,7 +1365,7 @@ class Player {
       moveY = playerSpeed;
     }
     
-    // Check collisions axis-by-axis (allowing sliding along obstacles).
+    // Perform axis-by-axis collision checking to allow sliding along obstacles.
     if (!this.checkCollision(this.x + moveX, this.y)) {
       this.x += moveX;
     }
@@ -1372,7 +1374,7 @@ class Player {
     }
   }
   
-  // Check for collisions with every obstacle.
+  // Check collisions against obstacles.
   checkCollision(newX, newY) {
     for (let obs of obstacles) {
       if (this.collidesWith(obs, newX, newY)) {
@@ -1392,15 +1394,14 @@ class Player {
     );
   }
   
-  // Render the player sprite.
   display() {
     image(playerImg, this.x, this.y, this.w, this.h);
   }
 }
 
-// ----------------------------------
+// ------------------------
 // Base class for obstacles (Tree and House)
-// ----------------------------------
+// ------------------------
 class Obstacle {
   constructor(x, y, w, h, img) {
     this.x = x;
@@ -1429,9 +1430,9 @@ class House extends Obstacle {
   }
 }
 
-// ----------------------------------
-// NPC class (interactive, does not block the player)
-// ----------------------------------
+// ------------------------
+// NPC class (interactive but non-blocking)
+// ------------------------
 class NPC {
   constructor(x, y, w, h, img) {
     this.x = x;
