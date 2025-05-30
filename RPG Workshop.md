@@ -7,7 +7,7 @@ Links:
 [color picker - Search](https://www.bing.com/search?pglt=2211&q=color+picker&cvid=191ea46face54bf1a8a32518f4cde092&gs_lcrp=EgRlZGdlKgYIABBFGDsyBggAEEUYOzIGCAEQABhAMgYIAhAAGEAyBggDEC4YQDIGCAQQABhAMgYIBRAAGEAyBggGEAAYQDIGCAcQABhAMgYICBBFGDwyCAgJEOkHGPxV0gEIMTUzNWowajGoAgiwAgE&FORM=ANNAB1&PC=U531)
 
 # 1st Part - Fundamentals
-Goal: Understand basic concepts and how the environment work
+Scop: Sa intelegem conceptele de baza
 
 ## Create a canvas
 
@@ -163,41 +163,38 @@ class Frog{
 # 2nd Part - Game Time
 
 ## Defining the Goals
+**Obiectiv**: Crearea unui joc funcțional folosind doar prompturi
+Jocul RPG ar trebui să aibă:
 
-Goal: Create a functioning game using only prompts
-RPG Game should have
-- a character that moves around a map
-- it can interact with objects
-- it can talk to NPCc
-- has a Menu where we can view our items
-- has a Journal to define the current Tasks
-- it can fight with enemies and gain XP
+- un personaj care se mișcă pe o hartă
+- poate interacționa cu obiecte
+- poate vorbi cu NPC-uri
+- are un meniu unde putem vizualiza obiectele noastre
+- are un jurnal pentru a defini sarcinile curente
+- poate lupta cu inamicii și câștiga XP
 
-The Game should be created where?
-- in p5.js
-- in Web Editor
-- I want to be able to just copy the code and play the game
-- Alternatively we can ask Copilot to tell us what we can use for this
+Unde ar trebui creat jocul?
+- în p5.js
+- în Web Editor
+- Vreau să pot copia codul și să joc jocul direct
 
+### Scrierea Prompturilor Bune
+1. Fii Clar și Specific: Când creezi prompturi, claritatea și specificitatea sunt cruciale. Specifică clar ce ai nevoie ca Copilot să facă, fie că este vorba de creare, rezumare, editare sau transformare a conținutului.
 
-## Writing Good Prompts 
+2. Oferă Context: Include context relevant în prompturile tale pentru a ajuta Copilot să înțeleagă mai bine sarcina. De exemplu, dacă ceri un rezumat, menționează documentul sau subiectul specific, sau oferă o imagine pentru context.
 
-1. **Be Clear and Specific**: When crafting prompts, clarity and specificity are crucial. Clearly state what you need Copilot to do, whether it's creating, summarizing, editing, or transforming content 
-2. **Provide Context**: Include relevant context in your prompts to help Copilot understand the task better. For example, if you're asking for a summary, mention the specific document or topic, or provide a a image for context
+3. Dezvoltare Iterativă: Folosește o abordare iterativă pentru a rafina prompturile. Începe cu o cerere generală și apoi restrânge-o cu întrebări suplimentare pentru a obține răspunsuri mai detaliate și precise.
 
-3. **Iterative Development**: Use an iterative approach to refine your prompts. Start with a broad request and then narrow it down with follow-up questions to get more detailed and accurate responses 
+4. Folosește Exemple și Constrângeri: Încorporează exemple specifice și constrângeri în prompturile tale pentru a ghida răspunsurile Copilot. Acest lucru ajută la generarea unor rezultate mai precise și relevante.
 
-4. **Use Examples and Constraints**: Incorporate specific examples and constraints in your prompts to guide Copilot's responses. This helps in generating more precise and relevant outcomes 
+5. Începe de la Zero pentru Sarcini Noi: Când schimbi sarcinile, evită să întrerupi conversația curentă. În schimb, tastează "subiect nou" pentru a începe de la zero și oferă instrucțiuni clare pentru noua sarcină.
 
-5. **Start Fresh for New Tasks**: When switching tasks, avoid interrupting the current conversation. Instead, type "new topic" to start fresh and provide clear instructions for the new task 
+6. Cunoaște Limitările Copilot: Înțelege că Copilot este limitat la conversația curentă. Oferirea de prompturi detaliate și specifice ajută la obținerea unor rezultate mai bune.
 
-6. **Know Copilot's Limitations**: Understand that Copilot is limited to the current conversation. Providing detailed and specific prompts helps in getting better results 
+Prima încercare cu Copilot
+💡Amintește-ți să folosești Think Deeper!
 
-## First try with copilot
-
-💡Remember to use Think Deeper !
-
-Let's try different images
+Să încercăm imagini diferite.
 
 ![PacMan](https://github.com/user-attachments/assets/20175e7c-b213-4f69-937c-c8ce7142e33e)
 
@@ -563,11 +560,11 @@ class Obstacle {
 
 ```
 
-- let's look at how the player class is constructed
-	- it has a `(x,y)` position and also a `Speed`
-	- `Speed` is modified when pressing the arrows
-- We can also look at collisions
-	- it checks the position of the Player with the position of the obstacles (bounding box)
+- să vedem cum este construită clasa jucătorului
+	- are o poziție `(x,y)` și, de asemenea, o Viteză
+	- Viteza este modificată atunci când se apasă săgețile
+- Putem, de asemenea, să ne uităm la coliziuni
+	- verifică poziția Jucătorului cu poziția obstacolelor (bounding box)
 
 
 
@@ -577,10 +574,11 @@ class Obstacle {
 Let's add sprite images for the elements. For now we have the Player. and We will have two other types of obsctacles - Tree and House, each one with a spite mage. Also, background should be an image as well
 ```
 
-Prompt:
-💡 This is also good moment to create the sprite images
 
-📌Open a separate chat for creating the images so we don't mix the contexts
+Prompt:
+💡 Acesta este, de asemenea, un moment bun pentru a crea imaginile.
+
+📌 Deschide un chat separat pentru a crea imaginile, astfel încât să nu amestecăm contextele.
 ```
 Generate a image with transparent background of fantasy house in pixel style, for a RPG game
 ```
